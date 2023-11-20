@@ -119,7 +119,7 @@ def add_feature(series_df: pl.DataFrame) -> pl.DataFrame:
     window_size = 3601 # 適切なウィンドウサイズを指定
     poly_order = 3  # 多項式の次数
     anglez_savgolFilter_300 = savgol_filter(
-        series_df['anglez'].diff(1).abs(),
+        series_df['anglez'].diff(1).abs().to_numpy(),
         window_size,
         poly_order
     )
@@ -131,7 +131,7 @@ def add_feature(series_df: pl.DataFrame) -> pl.DataFrame:
     series_df = series_df.with_columns([
         calc_mixture_gaussian(hour_plus_minute, **awake_features).alias("signal_awake"),
         calc_mixture_gaussian(hour_plus_minute, **onset_features).alias("signal_onset"),
-        pl.col(anglez_savgolFilter_300).alias("anglez_savgolFilter_300")
+        pl.Series(anglez_savgolFilter_300, name="anglez_savgolFilter_300")
     ])
 
     
