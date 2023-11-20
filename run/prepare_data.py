@@ -114,6 +114,15 @@ def add_feature(series_df: pl.DataFrame) -> pl.DataFrame:
     series_df = series_df.with_columns(
         *to_coord(pl.col("timestamp").dt.hour(), 24, "hour"),
     )
+
+     # anglez の差分の絶対値に対する savgol_filter を適用
+    window_size = 3601 # 適切なウィンドウサイズを指定
+    poly_order = 3  # 多項式の次数
+    anglez_savgolFilter_300 = savgol_filter(
+        series_df['anglez'].diff(1).abs(),
+        window_size,
+        poly_order
+    )
     
     # hour_plus_minute を計算
     hour_plus_minute = (pl.col("timestamp").dt.hour() * 10 + pl.col("timestamp").dt.minute() // 6) / 10
@@ -121,18 +130,11 @@ def add_feature(series_df: pl.DataFrame) -> pl.DataFrame:
     # ベクトル化された操作で新しい特徴量を計算
     series_df = series_df.with_columns([
         calc_mixture_gaussian(hour_plus_minute, **awake_features).alias("signal_awake"),
-        calc_mixture_gaussian(hour_plus_minute, **onset_features).alias("signal_onset")
+        calc_mixture_gaussian(hour_plus_minute, **onset_features).alias("signal_onset"),
+        pl.col(anglez_savgolFilter_300).alias("anglez_savgolFilter_300")
     ])
 
     
-    # anglez の差分の絶対値に対する savgol_filter を適用
-    window_size = 3601 # 適切なウィンドウサイズを指定
-    poly_order = 3  # 多項式の次数
-    series_df['anglez_savgolFilter_300'] = savgol_filter(
-        series_df['anglez'].diff(1).abs(),
-        window_size,
-        poly_order
-    )
     
     return series_df.select("series_id", *FEATURE_NAMES)
 #poly_fit(hour_plus_minute).alias("signal_poly")
