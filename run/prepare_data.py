@@ -131,7 +131,7 @@ def add_feature(series_df: pl.DataFrame) -> pl.DataFrame:
     series_df = series_df.with_columns([
         calc_mixture_gaussian(hour_plus_minute, **awake_features).alias("signal_awake"),
         calc_mixture_gaussian(hour_plus_minute, **onset_features).alias("signal_onset"),
-        pl.Series(anglez_savgolFilter_300, name="anglez_savgolFilter_300")
+        pl.Series(name="anglez_savgolFilter_300", values=anglez_savgolFilter_300)
     ])
 
     
