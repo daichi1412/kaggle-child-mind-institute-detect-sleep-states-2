@@ -57,3 +57,4 @@ features:
   - "hour_cos"
   - "signal_awake"
   - "signal_onset"
+  - "anglez_savgolFilter_300"
