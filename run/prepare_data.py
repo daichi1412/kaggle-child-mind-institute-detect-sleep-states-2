@@ -5,6 +5,8 @@ import hydra
 import numpy as np
 import polars as pl
 from tqdm import tqdm
+from scipy.signal import savgol_filter
+#from scipy.stats import norm
 
 from src.conf import PrepareDataConfig
 from src.utils.common import trace
@@ -31,6 +33,7 @@ FEATURE_NAMES = [
     # "anglez_cos",
     "signal_awake",
     "signal_onset",
+    "anglez_savgolFilter_300"
 ]
 
 ANGLEZ_MEAN = -8.810476
@@ -120,6 +123,16 @@ def add_feature(series_df: pl.DataFrame) -> pl.DataFrame:
         calc_mixture_gaussian(hour_plus_minute, **awake_features).alias("signal_awake"),
         calc_mixture_gaussian(hour_plus_minute, **onset_features).alias("signal_onset")
     ])
+
+    
+    # anglez の差分の絶対値に対する savgol_filter を適用
+    window_size = 3600  # 適切なウィンドウサイズを指定
+    poly_order = 3  # 多項式の次数
+    series_df['anglez_savgolFilter_300'] = savgol_filter(
+        series_df['anglez'].diff(1).abs(),
+        window_size,
+        poly_order
+    )
     
     return series_df.select("series_id", *FEATURE_NAMES)
 #poly_fit(hour_plus_minute).alias("signal_poly")
@@ -161,9 +174,10 @@ def main(cfg: PrepareDataConfig):
         series_df = (
             series_lf.with_columns(
                 pl.col("timestamp").str.to_datetime("%Y-%m-%dT%H:%M:%S%z"),
-                deg_to_rad(pl.col("anglez")).alias("anglez_rad"),
+                #deg_to_rad(pl.col("anglez")).alias("anglez_rad"),
                 (pl.col("anglez") - ANGLEZ_MEAN) / ANGLEZ_STD,
                 (pl.col("enmo") - ENMO_MEAN) / ENMO_STD,
+                #pl.col("anglez").diff(1).abs().alias("anglez_abs_diff"),
             )
             .select(
                 [
@@ -171,6 +185,7 @@ def main(cfg: PrepareDataConfig):
                     pl.col("anglez"),
                     pl.col("enmo"),
                     pl.col("timestamp"),
+                    #pl.col("anglez_abs_diff")
                     #pl.col("anglez_rad"),
                 ]
             )
