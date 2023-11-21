@@ -13,7 +13,7 @@ defaults:
   - _self_
   - dir: local
   - dataset: seg
-  - model: spec2Dcnn
+  - model: Spec2DCNN
   - feature_extractor: CNNSpectrogram
   - decoder: UNet1DDecoder
 
