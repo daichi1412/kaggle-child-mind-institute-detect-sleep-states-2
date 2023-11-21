@@ -13,9 +13,9 @@ defaults:
   - _self_
   - dir: local
   - dataset: seg
-  - model: TransformerAutoModel
-  # - feature_extractor: CNNSpectrogram
-  # - decoder: UNet1DDecoder
+  - model: spec2Dcnn
+  - feature_extractor: CNNSpectrogram
+  - decoder: UNet1DDecoder
   - split: fold_0
 
 seed: 42
@@ -61,16 +61,16 @@ features:
   # - "step"
   # - "month_sin"
   # - "month_cos"
-  # - "hour_sin"
-  # - "hour_cos"
+  - "hour_sin"
+  - "hour_cos"
   # - "minute_sin"
   # - "minute_cos"
   # - "anglez_sin"
   # - "anglez_cos"
-  # - "signal_awake"
-  # - "signal_onset"
+  - "signal_awake"
+  - "signal_onset"
   # - "signal_poly"
-  #- "anglez_savgolFilter_300"
+  - "anglez_savgolFilter_300"
 
 # optimizer
 optimizer:
