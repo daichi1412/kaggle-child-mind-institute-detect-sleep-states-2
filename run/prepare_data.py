@@ -23,17 +23,17 @@ FEATURE_NAMES = [
     "anglez",
     "enmo",
     #"step",
-    # "hour_sin",
-    # "hour_cos",
+    "hour_sin",
+    "hour_cos",
     # "month_sin",
     # "month_cos",
     # "minute_sin",
     # "minute_cos",
     # "anglez_sin",
     # "anglez_cos",
-    # "signal_awake",
-    # "signal_onset",
-    # "anglez_savgolFilter_300"
+    "signal_awake",
+    "signal_onset",
+    "anglez_savgolFilter_300"
 ]
 
 ANGLEZ_MEAN = -8.810476
@@ -198,7 +198,7 @@ def main(cfg: PrepareDataConfig):
     with trace("Save features"):
         for series_id, this_series_df in tqdm(series_df.group_by("series_id"), total=n_unique):
             # 特徴量を追加
-            #this_series_df = add_feature(this_series_df)
+            this_series_df = add_feature(this_series_df)
 
             # 特徴量をそれぞれnpyで保存
             series_dir = processed_dir / series_id  # type: ignore
