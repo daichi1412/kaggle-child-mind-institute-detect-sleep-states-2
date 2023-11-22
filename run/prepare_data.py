@@ -119,7 +119,7 @@ def add_feature(series_df: pl.DataFrame) -> pl.DataFrame:
     window_size = 3601 # 適切なウィンドウサイズを指定
     poly_order = 3  # 多項式の次数
     anglez_savgolFilter_300 = savgol_filter(
-        series_df['anglez'].diff(1).fillna(method='bfill').abs().to_numpy(),
+        series_df['anglez'].diff(1).fill_none(method='bfill').abs().to_numpy(),
         window_size,
         poly_order
     )
