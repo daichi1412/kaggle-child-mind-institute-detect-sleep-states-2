@@ -69,21 +69,7 @@ def negative_sampling(this_event_df: pd.DataFrame, num_steps: int) -> int:
     negative_positions = list(set(range(num_steps)) - positive_positions)
     return random.sample(negative_positions, 1)[0]
 
-onset_features = {
-    'w1': 0.97292814,
-    'mu1': 2.12861738,
-    'sigma1': 1.699476,
-    'mu2': 22.7643724,
-    'sigma2': 0.42483832
-}
 
-awake_features = {
-    'w1': 0.47799486,
-    'mu1': 10.89539674,
-    'sigma1': 0.87151052,
-    'mu2': 11.82689931,
-    'sigma2': 2.06792452
-}
 
 
 # ref: https://www.kaggle.com/competitions/dfl-bundesliga-data-shootout/discussion/360236#2004730
