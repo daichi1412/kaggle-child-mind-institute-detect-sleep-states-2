@@ -124,7 +124,7 @@ def add_feature(series_df: pl.DataFrame) -> pl.DataFrame:
 
     # データサイズに基づいて window_size を調整
     if len(anglez_diff_abs) < window_size:
-        window_size = 1
+        window_size = 5
     
     anglez_savgolFilter_300 = savgol_filter(
         anglez_diff_abs,
