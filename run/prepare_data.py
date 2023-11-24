@@ -118,8 +118,16 @@ def add_feature(series_df: pl.DataFrame) -> pl.DataFrame:
      # anglez の差分の絶対値に対する savgol_filter を適用
     window_size = 3601 # 適切なウィンドウサイズを指定
     poly_order = 3  # 多項式の次数
+
+    # anglezの差分の絶対値を計算
+    anglez_diff_abs = series_df['anglez'].diff(1).fill_null(strategy="backward").abs().to_numpy()
+
+    # データサイズに基づいて window_size を調整
+    if len(anglez_diff_abs) < window_size:
+        window_size = 1
+    
     anglez_savgolFilter_300 = savgol_filter(
-        series_df['anglez'].diff(1).fill_null(strategy="backward").abs().to_numpy(),
+        anglez_diff_abs,
         window_size,
         poly_order
     )
