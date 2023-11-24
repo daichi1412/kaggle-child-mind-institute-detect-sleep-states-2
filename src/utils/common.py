@@ -69,18 +69,57 @@ def negative_sampling(this_event_df: pd.DataFrame, num_steps: int) -> int:
     negative_positions = list(set(range(num_steps)) - positive_positions)
     return random.sample(negative_positions, 1)[0]
 
+onset_features = {
+    'w1': 0.97292814,
+    'mu1': 2.12861738,
+    'sigma1': 1.699476,
+    'mu2': 22.7643724,
+    'sigma2': 0.42483832
+}
+
+awake_features = {
+    'w1': 0.47799486,
+    'mu1': 10.89539674,
+    'sigma1': 0.87151052,
+    'mu2': 11.82689931,
+    'sigma2': 2.06792452
+}
+
 
 # ref: https://www.kaggle.com/competitions/dfl-bundesliga-data-shootout/discussion/360236#2004730
-def gaussian_kernel(length: int, sigma: int = 3) -> np.ndarray:
-    x = np.ogrid[-length : length + 1]
-    h = np.exp(-(x**2) / (2 * sigma * sigma))  # type: ignore
+# def gaussian_kernel(length: int, sigma: int = 3) -> np.ndarray:
+#     x = np.ogrid[-length : length + 1]
+#     h = np.exp(-(x**2) / (2 * sigma * sigma))  # type: ignore
+#     h[h < np.finfo(h.dtype).eps * h.max()] = 0
+#     return h
+
+def gaussian_kernel(length: int, w1: float, mu1: float, sigma1: float, mu2: float, sigma2: float) -> np.ndarray:
+    x = np.ogrid[-length: length + 1]
+    gaussian1 = np.exp(-(x - mu1) ** 2 / (2 * sigma1 ** 2))
+    gaussian2 = np.exp(-(x - mu2) ** 2 / (2 * sigma2 ** 2))
+    h = w1 * gaussian1 + (1 - w1) * gaussian2
     h[h < np.finfo(h.dtype).eps * h.max()] = 0
     return h
 
 
-def gaussian_label(label: np.ndarray, offset: int, sigma: int) -> np.ndarray:
+# def gaussian_label(label: np.ndarray, offset: int, sigma: int) -> np.ndarray:
+#     num_events = label.shape[1]
+#     for i in range(num_events):
+#         label[:, i] = np.convolve(label[:, i], gaussian_kernel(offset, sigma), mode="same")
+
+#     return label
+
+def gaussian_label(label: np.ndarray, offset: int, onset_features: dict, awake_features: dict) -> np.ndarray:
     num_events = label.shape[1]
     for i in range(num_events):
-        label[:, i] = np.convolve(label[:, i], gaussian_kernel(offset, sigma), mode="same")
+        if i == 0:
+            # onset_features を使用
+            kernel = gaussian_kernel(offset, **onset_features)
+        else:
+            # awake_features を使用
+            kernel = gaussian_kernel(offset, **awake_features)
+
+        label[:, i] = np.convolve(label[:, i], kernel, mode="same")
 
     return label
+
