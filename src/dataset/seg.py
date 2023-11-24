@@ -97,6 +97,22 @@ class SegTrainDataset(Dataset):
             antialias=False,
         ).squeeze(0)
 
+        onset_features = {
+            'w1': 0.97292814,
+            'mu1': 2.12861738,
+            'sigma1': 1.699476,
+            'mu2': 22.7643724,
+            'sigma2': 0.42483832
+        }
+
+        awake_features = {
+            'w1': 0.47799486,
+            'mu1': 10.89539674,
+            'sigma1': 0.87151052,
+            'mu2': 11.82689931,
+            'sigma2': 2.06792452
+        }
+
         # from hard label to gaussian label
         num_frames = self.upsampled_num_frames // self.cfg.downsample_rate
         label = get_seg_label(this_event_df, num_frames, self.cfg.duration, start, end)
