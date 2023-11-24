@@ -97,7 +97,7 @@ class SegTrainDataset(Dataset):
             antialias=False,
         ).squeeze(0)
 
-        onset_features = {
+        onset_featuress_dict = {
             'w1': 0.97292814,
             'mu1': 2.12861738,
             'sigma1': 1.699476,
@@ -105,7 +105,7 @@ class SegTrainDataset(Dataset):
             'sigma2': 0.42483832
         }
 
-        awake_features = {
+        awake_featuress_dict = {
             'w1': 0.47799486,
             'mu1': 10.89539674,
             'sigma1': 0.87151052,
