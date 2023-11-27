@@ -70,7 +70,7 @@ features:
   - "signal_awake"
   - "signal_onset"
   # - "signal_poly"
-  - "anglez_savgolFilter_300"
+  # - "anglez_savgolFilter_300"
 
 # optimizer
 optimizer:
