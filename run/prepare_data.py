@@ -33,7 +33,7 @@ FEATURE_NAMES = [
     # "anglez_cos",
     "signal_awake",
     "signal_onset",
-    "anglez_savgolFilter_300"
+    #"anglez_savgolFilter_300"
 ]
 
 ANGLEZ_MEAN = -8.810476
@@ -115,22 +115,22 @@ def add_feature(series_df: pl.DataFrame) -> pl.DataFrame:
         *to_coord(pl.col("timestamp").dt.hour(), 24, "hour"),
     )
 
-     # anglez の差分の絶対値に対する savgol_filter を適用
-    window_size = 3601 # 適切なウィンドウサイズを指定
-    poly_order = 3  # 多項式の次数
+    #  # anglez の差分の絶対値に対する savgol_filter を適用
+    # window_size = 3601 # 適切なウィンドウサイズを指定
+    # poly_order = 3  # 多項式の次数
 
-    # anglezの差分の絶対値を計算
-    anglez_diff_abs = series_df['anglez'].diff(1).fill_null(strategy="backward").abs().to_numpy()
+    # # anglezの差分の絶対値を計算
+    # anglez_diff_abs = series_df['anglez'].diff(1).fill_null(strategy="backward").abs().to_numpy()
 
-    # データサイズに基づいて window_size を調整
-    if len(anglez_diff_abs) < window_size:
-        window_size = 5
+    # # データサイズに基づいて window_size を調整
+    # if len(anglez_diff_abs) < window_size:
+    #     window_size = 5
     
-    anglez_savgolFilter_300 = savgol_filter(
-        anglez_diff_abs,
-        window_size,
-        poly_order
-    )
+    # anglez_savgolFilter_300 = savgol_filter(
+    #     anglez_diff_abs,
+    #     window_size,
+    #     poly_order
+    # )
     
     # hour_plus_minute を計算
     hour_plus_minute = (pl.col("timestamp").dt.hour() * 10 + pl.col("timestamp").dt.minute() // 6) / 10
@@ -139,7 +139,7 @@ def add_feature(series_df: pl.DataFrame) -> pl.DataFrame:
     series_df = series_df.with_columns([
         calc_mixture_gaussian(hour_plus_minute, **awake_features).alias("signal_awake"),
         calc_mixture_gaussian(hour_plus_minute, **onset_features).alias("signal_onset"),
-        pl.Series(name="anglez_savgolFilter_300", values=anglez_savgolFilter_300)
+        # pl.Series(name="anglez_savgolFilter_300", values=anglez_savgolFilter_300)
     ])
 
     
